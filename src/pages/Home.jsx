@@ -1,84 +1,91 @@
-import { useState, useEffect } from "react"
-import { Link, useLocation } from "react-router-dom"
-import UserCard from "../components/UserCard"
-import LoadingSpinner from "../components/LoadingSpinner"
-import ErrorAlert from "../components/ErrorAlert"
-import SuccessAlert from "../components/SuccessAlert"
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import UserCard from "../components/UserCard";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorAlert from "../components/ErrorAlert";
+import SuccessAlert from "../components/SuccessAlert";
 
 export default function Home() {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
-  const [searchTerm, setSearchTerm] = useState("")
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const location = useLocation()
+  const location = useLocation();
 
   // Load initial users
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     const fetchUsers = async () => {
       try {
-        setLoading(true)
-        const response = await fetch("https://jsonplaceholder.typicode.com/users")
-        if (!response.ok) throw new Error("Failed to fetch users")
+        setLoading(true);
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+        if (!response.ok) throw new Error("Failed to fetch users");
 
-        const data = await response.json()
-        if (isMounted) setUsers(data)
+        const data = await response.json();
+
+        if (isMounted) {
+          const local = JSON.parse(localStorage.getItem("localUsers") || "[]");
+
+          setUsers([...data, ...local]); // 👈 MERGE API + LOCAL USERS
+        }
       } catch (err) {
-        if (isMounted) setError(err.message)
+        if (isMounted) setError(err.message);
       } finally {
-        if (isMounted) setLoading(false)
+        if (isMounted) setLoading(false);
       }
-    }
+    };
 
-    fetchUsers()
-    return () => (isMounted = false)
-  }, [])
+    fetchUsers();
+    return () => (isMounted = false);
+  }, []);
 
   // Add newly created user (because JSONPlaceholder doesn't store it)
   useEffect(() => {
     if (location.state?.newUser) {
-      setUsers(prev => [...prev, location.state.newUser])
-      setSuccess("User created successfully!")
+      setUsers((prev) => [...prev, location.state.newUser]);
+      setSuccess("User created successfully!");
     }
-  }, [location.state])
+  }, [location.state]);
 
   // Auto hide success message
   useEffect(() => {
-    if (!success) return
-    const timer = setTimeout(() => setSuccess(null), 3000)
-    return () => clearTimeout(timer)
-  }, [success])
+    if (!success) return;
+    const timer = setTimeout(() => setSuccess(null), 3000);
+    return () => clearTimeout(timer);
+  }, [success]);
 
   // Delete user locally
   const handleDelete = async (userId) => {
-    const confirmed = window.confirm("Are you sure?")
-    if (!confirmed) return
+    const confirmed = window.confirm("Are you sure?");
+    if (!confirmed) return;
 
     try {
       await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
         method: "DELETE",
-      })
-      setUsers(prev => prev.filter((u) => u.id !== userId))
-      setSuccess("User deleted!")
+      });
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      setSuccess("User deleted!");
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
   // Search filter
-  const filteredUsers = users.filter(u => {
-    const q = searchTerm.toLowerCase()
+  const filteredUsers = users.filter((u) => {
+    const q = searchTerm.toLowerCase();
     return (
       u.name.toLowerCase().includes(q) ||
       u.email.toLowerCase().includes(q) ||
       u.username.toLowerCase().includes(q)
-    )
-  })
+    );
+  });
 
-  if (loading) return <LoadingSpinner />
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div>
@@ -134,5 +141,5 @@ export default function Home() {
         </div>
       )}
     </div>
-  )
+  );
 }
