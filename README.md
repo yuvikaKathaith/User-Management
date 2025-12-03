@@ -31,28 +31,27 @@ A modern, responsive user management application built with React, Vite, and Rea
 ### Installation
 
 1. Clone the repository:
-\`\`\`bash
-git clone (https://github.com/yuvikaKathaith/User-Management)
-cd user-management
-\`\`\`
-
+   ```
+   git clone https://github.com/yuvikaKathaith/User-Management
+   cd user-management
+   ```
 2. Install dependencies:
-\`\`\`bash
-npm install
-\`\`\`
+  ```
+  npm install
+  ```
 
 3. Start the development server:
-\`\`\`bash
-npm run dev
-\`\`\`
+  ```
+  npm run dev
+  ```
 
 4. Open your browser and navigate to `http://localhost:5173`
 
 ### Building for Production
 
-\`\`\`bash
+```
 npm run build
-\`\`\`
+```
 
 The build output will be in the `dist` directory.
 
