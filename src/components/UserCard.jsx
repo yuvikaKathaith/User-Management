@@ -1,5 +1,3 @@
-"use client"
-
 /**
  * UserCard Component (UI Updated – Functionality Unchanged)
  * Blue + White modern theme

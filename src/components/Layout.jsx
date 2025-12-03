@@ -34,10 +34,10 @@ export default function Layout({ children }) {
             <nav className="hidden md:flex space-x-6">
               <Link
                 to="/"
-                className={`text-sm font-medium transition-colors ${
+                className={`text-sm font-medium transition-colors px-3 py-2 rounded-lg bg-blue-500 ${
                   location.pathname === "/"
-                    ? "text-blue-600 font-semibold"
-                    : "text-slate-500 hover:text-blue-600"
+                    ? "text-white font-semibold"
+                    : "hover:text-blue-600"
                 }`}
               >
                 Users
@@ -45,10 +45,10 @@ export default function Layout({ children }) {
 
               <Link
                 to="/create"
-                className={`text-sm font-medium transition-colors ${
+                className={`text-sm font-medium px-3 py-2 rounded-lg bg-blue-500 transition-colors ${
                   location.pathname === "/create"
-                    ? "text-blue-600 font-semibold"
-                    : "text-slate-500 hover:text-blue-600"
+                    ? "text-white font-semibold"
+                    : "hover:text-white"
                 }`}
               >
                 Create User

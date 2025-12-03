@@ -1,7 +1,6 @@
 /**
- * CreateUser Page Component
- * Provides form interface for creating new users
- * Handles POST request to API and navigation on success
+ * CreateUser Page Component — Blue/White Theme
+ * Only UI styles changed. Logic untouched.
  */
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
@@ -15,7 +14,6 @@ export default function CreateUser() {
   const [success, setSuccess] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  // Handle form submission
   const handleSubmit = async (formData) => {
     try {
       setLoading(true)
@@ -23,21 +21,15 @@ export default function CreateUser() {
 
       const response = await fetch("https://jsonplaceholder.typicode.com/users", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to create user")
-      }
+      if (!response.ok) throw new Error("Failed to create user")
 
-      const newUser = await response.json()
-
+      await response.json()
       setSuccess("User created successfully! Redirecting...")
 
-      // Navigate to home after 2 seconds
       setTimeout(() => {
         navigate("/", { state: { success: `User "${formData.name}" created successfully!` } })
       }, 2000)
@@ -49,12 +41,13 @@ export default function CreateUser() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
+    <div className="max-w-2xl mx-auto animate-in fade-in duration-300">
+
+      {/* HEADER */}
+      <div className="mb-10">
         <Link
           to="/"
-          className="inline-flex items-center text-purple-400 hover:text-purple-300 transition-colors mb-4 group"
+          className="inline-flex items-center text-blue-500 hover:text-blue-400 transition-all mb-4 group"
         >
           <svg
             className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform"
@@ -66,19 +59,25 @@ export default function CreateUser() {
           </svg>
           <span className="font-semibold">Back to Users</span>
         </Link>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-3">
+
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-500 to-sky-400 bg-clip-text text-transparent mb-2">
           Create New User
         </h1>
-        <p className="text-slate-400 text-lg">Add a new user to the system</p>
+        <p className="text-gray-400 text-lg">Add a new user to the system.</p>
       </div>
 
-      {/* Alerts */}
-      <ErrorAlert message={error} onDismiss={() => setError(null)} />
-      <SuccessAlert message={success} onDismiss={() => setSuccess(null)} />
+      {/* ALERTS */}
+      <div className="space-y-4">
+        <ErrorAlert message={error} onDismiss={() => setError(null)} />
+        <SuccessAlert message={success} onDismiss={() => setSuccess(null)} />
+      </div>
 
-      {/* Form Card */}
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8 shadow-2xl shadow-purple-500/10">
-        <UserForm onSubmit={handleSubmit} submitLabel={loading ? "Creating..." : "Create User"} />
+      {/* FORM */}
+      <div className="mt-6 bg-white/10 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8 shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all">
+        <UserForm 
+          onSubmit={handleSubmit}
+          submitLabel={loading ? "Creating..." : "Create User"}
+        />
       </div>
     </div>
   )

@@ -1,5 +1,3 @@
-"use client"
-
 /**
  * UserForm Component
  * Reusable form for creating and editing users
@@ -8,7 +6,6 @@
 import { useState } from "react"
 
 export default function UserForm({ initialData, onSubmit, submitLabel = "Submit" }) {
-  // Form state management
   const [formData, setFormData] = useState(
     initialData || {
       name: "",
@@ -16,15 +13,12 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
       email: "",
       phone: "",
       website: "",
-      company: {
-        name: "",
-      },
-    },
+      company: { name: "" },
+    }
   )
 
   const [errors, setErrors] = useState({})
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target
 
@@ -40,52 +34,42 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
       }))
     }
 
-    // Clear error for this field
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
   }
 
-  // Validate form data
   const validate = () => {
     const newErrors = {}
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required"
-    }
+    if (!formData.name.trim()) newErrors.name = "Name is required"
+    if (!formData.username.trim()) newErrors.username = "Username is required"
 
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required"
-    }
+    if (!formData.email.trim()) newErrors.email = "Email is required"
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid"
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid"
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone is required"
-    }
+    if (!formData.phone.trim()) newErrors.phone = "Phone is required"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault()
-
-    if (validate()) {
-      onSubmit(formData)
-    }
+    if (validate()) onSubmit(formData)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-xl border border-border shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+      
+      {/* SECTION TITLE */}
+      <h2 className="text-xl font-semibold text-foreground pb-2 border-b border-border">
+        User Information
+      </h2>
+
       {/* Name Input */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1.5">
           Full Name *
         </label>
         <input
@@ -94,17 +78,17 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={`w-full px-4 py-2 bg-secondary border ${
+          className={`w-full px-4 py-2.5 bg-secondary border ${
             errors.name ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
           placeholder="John Doe"
         />
-        {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
+        {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
       </div>
 
-      {/* Username Input */}
+      {/* Username */}
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="username" className="block text-sm font-medium text-foreground mb-1.5">
           Username *
         </label>
         <input
@@ -113,17 +97,17 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
           name="username"
           value={formData.username}
           onChange={handleChange}
-          className={`w-full px-4 py-2 bg-secondary border ${
+          className={`w-full px-4 py-2.5 bg-secondary border ${
             errors.username ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
           placeholder="johndoe"
         />
-        {errors.username && <p className="mt-1 text-sm text-destructive">{errors.username}</p>}
+        {errors.username && <p className="mt-1 text-xs text-destructive">{errors.username}</p>}
       </div>
 
-      {/* Email Input */}
+      {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
           Email Address *
         </label>
         <input
@@ -132,17 +116,17 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-2 bg-secondary border ${
+          className={`w-full px-4 py-2.5 bg-secondary border ${
             errors.email ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
           placeholder="john@example.com"
         />
-        {errors.email && <p className="mt-1 text-sm text-destructive">{errors.email}</p>}
+        {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
       </div>
 
-      {/* Phone Input */}
+      {/* Phone */}
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1.5">
           Phone Number *
         </label>
         <input
@@ -151,17 +135,17 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className={`w-full px-4 py-2 bg-secondary border ${
+          className={`w-full px-4 py-2.5 bg-secondary border ${
             errors.phone ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
           placeholder="+1 234 567 8900"
         />
-        {errors.phone && <p className="mt-1 text-sm text-destructive">{errors.phone}</p>}
+        {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone}</p>}
       </div>
 
-      {/* Website Input */}
+      {/* Website */}
       <div>
-        <label htmlFor="website" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="website" className="block text-sm font-medium text-foreground mb-1.5">
           Website
         </label>
         <input
@@ -170,14 +154,14 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
           name="website"
           value={formData.website}
           onChange={handleChange}
-          className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           placeholder="www.example.com"
         />
       </div>
 
-      {/* Company Name Input */}
+      {/* Company */}
       <div>
-        <label htmlFor="companyName" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="companyName" className="block text-sm font-medium text-foreground mb-1.5">
           Company Name
         </label>
         <input
@@ -186,16 +170,16 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
           name="companyName"
           value={formData.company?.name || ""}
           onChange={handleChange}
-          className="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           placeholder="Acme Corp"
         />
       </div>
 
-      {/* Submit Button */}
-      <div className="flex space-x-4 pt-4">
+      {/* Submit */}
+      <div className="pt-4">
         <button
           type="submit"
-          className="flex-1 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
+          className="w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
         >
           {submitLabel}
         </button>
