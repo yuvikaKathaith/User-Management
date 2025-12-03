@@ -31,10 +31,10 @@ A modern, responsive user management application built with React, Vite, and Rea
 ### Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/yuvikaKathaith/User-Management
-   cd user-management
-   ```
+```
+git clone https://github.com/yuvikaKathaith/User-Management
+cd user-management
+```
 2. Install dependencies:
   ```
   npm install
