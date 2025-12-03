@@ -60,126 +60,140 @@ export default function UserForm({ initialData, onSubmit, submitLabel = "Submit"
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-xl border border-border shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-      
-      {/* SECTION TITLE */}
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 bg-card p-6 rounded-xl border border-border shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300"
+    >
       <h2 className="text-xl font-semibold text-foreground pb-2 border-b border-border">
         User Information
       </h2>
 
-      {/* Name Input */}
+      {/* Name */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1.5">
-          Full Name *
+        <label className="block text-sm font-medium text-foreground mb-1.5">
+          Full Name <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          id="name"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={`w-full px-4 py-2.5 bg-secondary border ${
-            errors.name ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          className={`w-full px-4 py-2.5 bg-secondary border rounded-lg text-foreground 
+          placeholder:text-muted-foreground/60 focus:outline-none 
+          ${
+            errors.name
+              ? "border-red-500 focus:ring-2 focus:ring-red-500/50"
+              : "border-border focus:ring-2 focus:ring-primary/50"
+          } transition-all`}
           placeholder="John Doe"
         />
-        {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
+        {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
       </div>
 
       {/* Username */}
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-foreground mb-1.5">
-          Username *
+        <label className="block text-sm font-medium text-foreground mb-1.5">
+          Username <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          id="username"
           name="username"
           value={formData.username}
           onChange={handleChange}
-          className={`w-full px-4 py-2.5 bg-secondary border ${
-            errors.username ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          className={`w-full px-4 py-2.5 bg-secondary border rounded-lg text-foreground
+          placeholder:text-muted-foreground/60 focus:outline-none 
+          ${
+            errors.username
+              ? "border-red-500 focus:ring-2 focus:ring-red-500/50"
+              : "border-border focus:ring-2 focus:ring-primary/50"
+          } transition-all`}
           placeholder="johndoe"
         />
-        {errors.username && <p className="mt-1 text-xs text-destructive">{errors.username}</p>}
+        {errors.username && <p className="mt-1 text-xs text-red-500">{errors.username}</p>}
       </div>
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
-          Email Address *
+        <label className="block text-sm font-medium text-foreground mb-1.5">
+          Email Address <span className="text-red-500">*</span>
         </label>
         <input
           type="email"
-          id="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-2.5 bg-secondary border ${
-            errors.email ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          className={`w-full px-4 py-2.5 bg-secondary border rounded-lg text-foreground 
+          placeholder:text-muted-foreground/60 focus:outline-none 
+          ${
+            errors.email
+              ? "border-red-500 focus:ring-2 focus:ring-red-500/50"
+              : "border-border focus:ring-2 focus:ring-primary/50"
+          } transition-all`}
           placeholder="john@example.com"
         />
-        {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
+        {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
       </div>
 
       {/* Phone */}
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1.5">
-          Phone Number *
+        <label className="block text-sm font-medium text-foreground mb-1.5">
+          Phone Number <span className="text-red-500">*</span>
         </label>
         <input
           type="tel"
-          id="phone"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className={`w-full px-4 py-2.5 bg-secondary border ${
-            errors.phone ? "border-destructive" : "border-border"
-          } rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+          className={`w-full px-4 py-2.5 bg-secondary border rounded-lg text-foreground 
+          placeholder:text-muted-foreground/60 focus:outline-none 
+          ${
+            errors.phone
+              ? "border-red-500 focus:ring-2 focus:ring-red-500/50"
+              : "border-border focus:ring-2 focus:ring-primary/50"
+          } transition-all`}
           placeholder="+1 234 567 8900"
         />
-        {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone}</p>}
+        {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
       </div>
 
       {/* Website */}
       <div>
-        <label htmlFor="website" className="block text-sm font-medium text-foreground mb-1.5">
+        <label className="block text-sm font-medium text-foreground mb-1.5">
           Website
         </label>
         <input
           type="text"
-          id="website"
           name="website"
           value={formData.website}
           onChange={handleChange}
-          className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg text-foreground 
+          placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           placeholder="www.example.com"
         />
       </div>
 
       {/* Company */}
       <div>
-        <label htmlFor="companyName" className="block text-sm font-medium text-foreground mb-1.5">
+        <label className="block text-sm font-medium text-foreground mb-1.5">
           Company Name
         </label>
         <input
           type="text"
-          id="companyName"
           name="companyName"
-          value={formData.company?.name || ""}
+          value={formData.company.name}
           onChange={handleChange}
-          className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg text-foreground 
+          placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           placeholder="Acme Corp"
         />
       </div>
 
-      {/* Submit */}
+      {/* Submit button */}
       <div className="pt-4">
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
+          className="w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg 
+          hover:bg-primary/90 transition-colors shadow-sm"
         >
           {submitLabel}
         </button>
