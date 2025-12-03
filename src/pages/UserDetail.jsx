@@ -1,74 +1,108 @@
 /**
- * UserDetail Page Component
- * Displays comprehensive information about a single user
- * Fetches user data based on URL parameter
+ * UserDetail Page Component (Fully Fixed for Local + API Users)
  */
-import { useState, useEffect } from "react"
-import { useParams, Link, useNavigate } from "react-router-dom"
-import LoadingSpinner from "../components/LoadingSpinner"
-import ErrorAlert from "../components/ErrorAlert"
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorAlert from "../components/ErrorAlert";
 
 export default function UserDetail() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchUser()
-  }, [id])
+    fetchUser();
+  }, [id]);
 
   const fetchUser = async () => {
-    try {
-      setLoading(true)
-      setError(null)
+    const userId = Number(id);
+    setLoading(true);
+    setError(null);
 
-      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
+    // 1️⃣ CHECK LOCAL USERS FIRST
+    const localUsers = JSON.parse(localStorage.getItem("localUsers") || "[]");
+    const localUser = localUsers.find((u) => u.id === userId);
+
+    if (localUser) {
+      setUser(localUser);
+      setLoading(false);
+      return; // STOP — do not fetch API
+    }
+
+    // 2️⃣ FETCH FROM API IF NOT LOCAL
+    try {
+      const response = await fetch(
+        `https://jsonplaceholder.typicode.com/users/${id}`
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch user details")
+        throw new Error("User not found on server");
       }
 
-      const data = await response.json()
-      setUser(data)
+      const data = await response.json();
+      setUser(data);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
 
-    try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
-        method: "DELETE",
-      })
+    const userId = Number(id);
 
-      if (!response.ok) throw new Error("Failed to delete user")
+    // DELETE LOCAL USER
+    let localUsers = JSON.parse(localStorage.getItem("localUsers") || "[]");
+    const existsLocally = localUsers.some((u) => u.id === userId);
 
-      navigate("/", { state: { success: "User deleted successfully!" } })
-    } catch (err) {
-      setError(err.message)
+    if (existsLocally) {
+      localUsers = localUsers.filter((u) => u.id !== userId);
+      localStorage.setItem("localUsers", JSON.stringify(localUsers));
+
+      return navigate("/", {
+        state: { success: "User deleted successfully!" },
+      });
     }
-  }
 
-  if (loading) return <LoadingSpinner />
+    // DELETE API USER
+    try {
+      const response = await fetch(
+        `https://jsonplaceholder.typicode.com/users/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to delete user");
+
+      navigate("/", { state: { success: "User deleted successfully!" } });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  if (loading) return <LoadingSpinner />;
 
   if (error || !user) {
     return (
       <div>
         <ErrorAlert message={error || "User not found"} />
-        <Link to="/" className="inline-flex items-center text-slate-700 hover:text-slate-900 transition-colors">
+        <Link
+          to="/"
+          className="inline-flex items-center text-slate-700 hover:text-slate-900 transition-colors"
+        >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           Back to Users
         </Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -89,15 +123,14 @@ export default function UserDetail() {
         <span className="font-semibold">Back to Users</span>
       </Link>
 
-      {/* User Profile Card */}
+      {/* User Card */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        {/* Header */}
         <div className="bg-blue-300 p-8 border-b border-slate-200">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div className="flex items-center space-x-4">
               <div className="w-24 h-24 bg-gray-400 rounded-full flex items-center justify-center shadow-sm">
                 <span className="text-4xl font-bold text-slate-800">
-                  {user.name.charAt(0).toUpperCase()}
+                  {user.name?.charAt(0).toUpperCase()}
                 </span>
               </div>
               <div>
@@ -105,6 +138,7 @@ export default function UserDetail() {
                 <p className="text-slate-600 mt-2 text-lg">@{user.username}</p>
               </div>
             </div>
+
             <div className="flex space-x-3">
               <Link
                 to={`/edit/${user.id}`}
@@ -125,7 +159,7 @@ export default function UserDetail() {
         {/* Details */}
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Contact Information */}
+            {/* Contact */}
             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
               <h2 className="text-xl font-semibold text-slate-900 mb-6">Contact Information</h2>
               <div className="space-y-4">
@@ -144,14 +178,18 @@ export default function UserDetail() {
             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
               <h2 className="text-xl font-semibold text-slate-900 mb-6">Address</h2>
               <div className="space-y-3 text-slate-700">
-                <p>{user.address.street}</p>
-                <p>{user.address.suite}</p>
-                <p>{user.address.city}, {user.address.zipcode}</p>
-                <div className="mt-4 pt-4 border-t border-slate-300">
-                  <p className="font-semibold text-slate-600 mb-1">Coordinates</p>
-                  <p>Lat: {user.address.geo.lat}</p>
-                  <p>Lng: {user.address.geo.lng}</p>
-                </div>
+                <p>{user.address?.street}</p>
+                <p>{user.address?.suite}</p>
+                <p>
+                  {user.address?.city}, {user.address?.zipcode}
+                </p>
+                {user.address?.geo && (
+                  <div className="mt-4 pt-4 border-t border-slate-300">
+                    <p className="font-semibold text-slate-600 mb-1">Coordinates</p>
+                    <p>Lat: {user.address.geo.lat}</p>
+                    <p>Lng: {user.address.geo.lng}</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -159,15 +197,15 @@ export default function UserDetail() {
             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 md:col-span-2">
               <h2 className="text-xl font-semibold text-slate-900 mb-6">Company</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-slate-700">
-                <p><span className="font-semibold text-slate-600">Name:</span> {user.company.name}</p>
-                <p><span className="font-semibold text-slate-600">Catch Phrase:</span> {user.company.catchPhrase}</p>
-                <p><span className="font-semibold text-slate-600">Business:</span> {user.company.bs}</p>
+                <p><span className="font-semibold text-slate-600">Name:</span> {user.company?.name}</p>
+                <p><span className="font-semibold text-slate-600">Catch Phrase:</span> {user.company?.catchPhrase}</p>
+                <p><span className="font-semibold text-slate-600">Business:</span> {user.company?.bs}</p>
               </div>
             </div>
-
           </div>
         </div>
       </div>
+
     </div>
-  )
+  );
 }

@@ -34,7 +34,7 @@ export default function EditUser() {
     if (localUser) {
       setUser(localUser);
       setLoading(false);
-      return; // ⛔ DO NOT FETCH FROM API
+      return; //
     }
 
     // IF NOT LOCAL → FETCH FROM API
@@ -63,29 +63,62 @@ export default function EditUser() {
       setError(null);
 
       const userId = Number(id);
-
       let localUsers = JSON.parse(localStorage.getItem("localUsers") || "[]");
 
+      // CASE 1 → API USER (id ≤ 10)
+      if (userId <= 10) {
+        try {
+          const res = await fetch(
+            `https://jsonplaceholder.typicode.com/users/${userId}`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+            }
+          );
+
+          if (!res.ok) throw new Error("API update failed");
+
+          // Also update your local cached API users (optional)
+          const apiCache = JSON.parse(localStorage.getItem("apiUsers") || "[]");
+          const apiIndex = apiCache.findIndex((u) => u.id === userId);
+
+          if (apiIndex !== -1) {
+            apiCache[apiIndex] = { ...apiCache[apiIndex], ...formData };
+            localStorage.setItem("apiUsers", JSON.stringify(apiCache));
+          }
+
+          setSuccess("User updated successfully! Redirecting...");
+          return setTimeout(() => {
+            navigate(`/user/${id}`, {
+              state: { success: "User updated successfully!" },
+            });
+          }, 1500);
+        } catch (err) {
+          setError("Failed to update user on API");
+          return;
+        }
+      }
+
+      // CASE 2 → LOCAL USER (id > 10)
       const index = localUsers.findIndex((u) => u.id === userId);
 
       if (index === -1) {
-        // user not in localStorage → show error
         setError("User not found locally");
         return;
       }
 
-      // UPDATE LOCAL USER
       localUsers[index] = { ...localUsers[index], ...formData };
       localStorage.setItem("localUsers", JSON.stringify(localUsers));
 
       setSuccess("User updated successfully! Redirecting...");
 
-      return setTimeout(() => {
+      setTimeout(() => {
         navigate(`/user/${id}`, {
           state: { success: "User updated successfully!" },
         });
       }, 1500);
-    } catch (err) {
+    } catch {
       setError("Failed to update user");
     } finally {
       setSubmitting(false);
