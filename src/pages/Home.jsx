@@ -68,7 +68,16 @@ export default function Home() {
       await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
         method: "DELETE",
       });
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
+
+      // Remove from state
+      const updated = users.filter((u) => u.id !== userId);
+      setUsers(updated);
+
+      // Remove from local storage too
+      const local = JSON.parse(localStorage.getItem("localUsers") || "[]");
+      const filteredLocal = local.filter((u) => u.id !== userId);
+      localStorage.setItem("localUsers", JSON.stringify(filteredLocal));
+
       setSuccess("User deleted!");
     } catch (err) {
       setError(err.message);
