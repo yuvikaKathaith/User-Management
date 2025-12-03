@@ -13,6 +13,8 @@ import Home from "./pages/Home"
 import UserDetail from "./pages/UserDetail"
 import CreateUser from "./pages/CreateUser"
 import EditUser from "./pages/EditUser"
+import { Toaster } from "react-hot-toast"
+
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
         <Route path="/create" element={<CreateUser />} />
         <Route path="/edit/:id" element={<EditUser />} />
       </Routes>
+       <Toaster position="top-right" reverseOrder={false} />
     </Layout>
   )
 }

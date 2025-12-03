@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import UserCard from "../components/UserCard"
 import LoadingSpinner from "../components/LoadingSpinner"
 import ErrorAlert from "../components/ErrorAlert"
@@ -12,14 +12,15 @@ export default function Home() {
   const [success, setSuccess] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
 
+  const location = useLocation()
+
+  // Load initial users
   useEffect(() => {
     let isMounted = true
 
     const fetchUsers = async () => {
       try {
         setLoading(true)
-        setError(null)
-
         const response = await fetch("https://jsonplaceholder.typicode.com/users")
         if (!response.ok) throw new Error("Failed to fetch users")
 
@@ -36,36 +37,44 @@ export default function Home() {
     return () => (isMounted = false)
   }, [])
 
+  // Add newly created user (because JSONPlaceholder doesn't store it)
+  useEffect(() => {
+    if (location.state?.newUser) {
+      setUsers(prev => [...prev, location.state.newUser])
+      setSuccess("User created successfully!")
+    }
+  }, [location.state])
+
+  // Auto hide success message
   useEffect(() => {
     if (!success) return
     const timer = setTimeout(() => setSuccess(null), 3000)
     return () => clearTimeout(timer)
   }, [success])
 
+  // Delete user locally
   const handleDelete = async (userId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this user?")
+    const confirmed = window.confirm("Are you sure?")
     if (!confirmed) return
 
     try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
+      await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
         method: "DELETE",
       })
-
-      if (!response.ok) throw new Error("Failed to delete user")
-
-      setUsers((prev) => prev.filter((u) => u.id !== userId))
-      setSuccess("User deleted successfully!")
+      setUsers(prev => prev.filter((u) => u.id !== userId))
+      setSuccess("User deleted!")
     } catch (err) {
       setError(err.message)
     }
   }
 
-  const filteredUsers = users.filter((user) => {
+  // Search filter
+  const filteredUsers = users.filter(u => {
     const q = searchTerm.toLowerCase()
     return (
-      user.name.toLowerCase().includes(q) ||
-      user.email.toLowerCase().includes(q) ||
-      user.username.toLowerCase().includes(q)
+      u.name.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q) ||
+      u.username.toLowerCase().includes(q)
     )
   })
 
@@ -86,9 +95,6 @@ export default function Home() {
           to="/create"
           className="mt-4 md:mt-0 inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all hover:scale-105 shadow-md"
         >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
           Add New User
         </Link>
       </div>
@@ -99,15 +105,6 @@ export default function Home() {
 
       {/* Search */}
       <div className="mb-6 relative">
-        <svg
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-
         <input
           type="text"
           placeholder="Search users..."
@@ -127,9 +124,6 @@ export default function Home() {
       {/* User Grid */}
       {filteredUsers.length === 0 ? (
         <div className="text-center py-16 bg-white border border-blue-200 rounded-2xl shadow-sm">
-          <svg className="w-20 h-20 text-blue-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292..." />
-          </svg>
           <p className="text-slate-500 text-lg">No matching users</p>
         </div>
       ) : (

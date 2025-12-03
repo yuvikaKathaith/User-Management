@@ -92,10 +92,10 @@ export default function UserDetail() {
       {/* User Profile Card */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="bg-slate-100 p-8 border-b border-slate-200">
+        <div className="bg-blue-300 p-8 border-b border-slate-200">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div className="flex items-center space-x-4">
-              <div className="w-24 h-24 bg-slate-200 rounded-full flex items-center justify-center shadow-sm">
+              <div className="w-24 h-24 bg-gray-400 rounded-full flex items-center justify-center shadow-sm">
                 <span className="text-4xl font-bold text-slate-800">
                   {user.name.charAt(0).toUpperCase()}
                 </span>
@@ -108,7 +108,7 @@ export default function UserDetail() {
             <div className="flex space-x-3">
               <Link
                 to={`/edit/${user.id}`}
-                className="px-6 py-3 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-900 transition-all"
+                className="px-6 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-slate-900 transition-all"
               >
                 Edit User
               </Link>

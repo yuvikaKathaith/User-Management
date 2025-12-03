@@ -1,48 +1,56 @@
 /**
  * CreateUser Page Component — Blue/White Theme
- * Only UI styles changed. Logic untouched.
+ * Uses react-hot-toast and stores new users in localStorage
  */
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import UserForm from "../components/UserForm"
-import ErrorAlert from "../components/ErrorAlert"
-import SuccessAlert from "../components/SuccessAlert"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import UserForm from "../components/UserForm";
+import ErrorAlert from "../components/ErrorAlert";
+import SuccessAlert from "../components/SuccessAlert";
+import toast from "react-hot-toast";
 
 export default function CreateUser() {
-  const navigate = useNavigate()
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (formData) => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const response = await fetch("https://jsonplaceholder.typicode.com/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
-      if (!response.ok) throw new Error("Failed to create user")
+      if (!response.ok) throw new Error("Failed to create user");
 
-      await response.json()
-      setSuccess("User created successfully! Redirecting...")
+      await response.json();
 
-      setTimeout(() => {
-        navigate("/", { state: { success: `User "${formData.name}" created successfully!` } })
-      }, 2000)
+      // Save locally
+      const newUser = { id: Date.now(), ...formData };
+      const existing = JSON.parse(localStorage.getItem("localUsers") || "[]");
+      existing.push(newUser);
+      localStorage.setItem("localUsers", JSON.stringify(existing));
+
+      toast.success(`User "${formData.name}" created successfully!`);
+      navigate("/");
     } catch (err) {
-      setError(err.message)
+      toast.error(err.message);
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-2xl mx-auto animate-in fade-in duration-300">
-
       {/* HEADER */}
       <div className="mb-10">
         <Link
@@ -55,7 +63,12 @@ export default function CreateUser() {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           <span className="font-semibold">Back to Users</span>
         </Link>
@@ -74,11 +87,11 @@ export default function CreateUser() {
 
       {/* FORM */}
       <div className="mt-6 bg-white/10 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8 shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all">
-        <UserForm 
+        <UserForm
           onSubmit={handleSubmit}
           submitLabel={loading ? "Creating..." : "Create User"}
         />
       </div>
     </div>
-  )
+  );
 }
