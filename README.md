@@ -32,8 +32,8 @@ A modern, responsive user management application built with React, Vite, and Rea
 
 1. Clone the repository:
 \`\`\`bash
-git clone <your-repo-url>
-cd user-management-crud
+git clone [<your-repo-url>](https://github.com/yuvikaKathaith/User-Management)
+cd user-management
 \`\`\`
 
 2. Install dependencies:
