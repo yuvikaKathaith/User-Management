@@ -4,6 +4,7 @@ import UserCard from "../components/UserCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorAlert from "../components/ErrorAlert";
 import SuccessAlert from "../components/SuccessAlert";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 export default function Home() {
   const [users, setUsers] = useState([]);
@@ -11,6 +12,8 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [deleteId, setDeleteId] = useState(null); 
 
   const location = useLocation();
 
@@ -30,8 +33,7 @@ export default function Home() {
 
         if (isMounted) {
           const local = JSON.parse(localStorage.getItem("localUsers") || "[]");
-
-          setUsers([...data, ...local]); // 👈 MERGE API + LOCAL USERS
+          setUsers([...data, ...local]);
         }
       } catch (err) {
         if (isMounted) setError(err.message);
@@ -44,7 +46,7 @@ export default function Home() {
     return () => (isMounted = false);
   }, []);
 
-  // Add newly created user (because JSONPlaceholder doesn't store it)
+  // Add newly created user
   useEffect(() => {
     if (location.state?.newUser) {
       setUsers((prev) => [...prev, location.state.newUser]);
@@ -52,36 +54,38 @@ export default function Home() {
     }
   }, [location.state]);
 
-  // Auto hide success message
+  // Auto hide success
   useEffect(() => {
     if (!success) return;
     const timer = setTimeout(() => setSuccess(null), 3000);
     return () => clearTimeout(timer);
   }, [success]);
 
-  // Delete user locally
-  const handleDelete = async (userId) => {
-    const confirmed = window.confirm("Are you sure?");
-    if (!confirmed) return;
+  // NEW: Open modal
+  const handleDeleteClick = (userId) => {
+    setDeleteId(userId);
+  };
 
+  //  NEW: Confirm deletion
+  const confirmDelete = async () => {
     try {
-      await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
+      await fetch(`https://jsonplaceholder.typicode.com/users/${deleteId}`, {
         method: "DELETE",
       });
 
-      // Remove from state
-      const updated = users.filter((u) => u.id !== userId);
+      const updated = users.filter((u) => u.id !== deleteId);
       setUsers(updated);
 
-      // Remove from local storage too
       const local = JSON.parse(localStorage.getItem("localUsers") || "[]");
-      const filteredLocal = local.filter((u) => u.id !== userId);
+      const filteredLocal = local.filter((u) => u.id !== deleteId);
       localStorage.setItem("localUsers", JSON.stringify(filteredLocal));
 
-      setSuccess("User deleted!");
+      setSuccess("User deleted successfully!");
     } catch (err) {
       setError(err.message);
     }
+
+    setDeleteId(null); // close modal
   };
 
   // Search filter
@@ -145,10 +149,17 @@ export default function Home() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredUsers.map((u) => (
-            <UserCard key={u.id} user={u} onDelete={handleDelete} />
+            <UserCard key={u.id} user={u} onDelete={() => handleDeleteClick(u.id)} />
           ))}
         </div>
       )}
+
+      {/* CUSTOM DELETE MODAL */}
+      <ConfirmDeleteModal
+        open={deleteId !== null}
+        onClose={() => setDeleteId(null)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
