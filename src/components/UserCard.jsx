@@ -6,7 +6,7 @@ import { Link } from "react-router-dom"
 
 export default function UserCard({ user, onDelete }) {
   return (
-    <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+    <div className="bg-black/10 border border-blue-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
       
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -63,7 +63,7 @@ export default function UserCard({ user, onDelete }) {
         {/* View */}
         <Link
           to={`/user/${user.id}`}
-          className="flex-1 px-4 py-2 bg-blue-50 text-blue-600 font-medium text-sm rounded-lg 
+          className="flex-1 px-4 py-2 bg-blue-200 text-blue-600 font-medium text-sm rounded-lg 
             hover:bg-blue-100 transition text-center"
         >
           View Details
@@ -81,7 +81,7 @@ export default function UserCard({ user, onDelete }) {
         {/* Delete */}
         <button
           onClick={() => onDelete(user.id)}
-          className="px-4 py-2 bg-red-50 text-red-600 font-medium text-sm rounded-lg 
+          className="px-4 py-2 bg-red-200 text-red-600 font-medium text-sm rounded-lg 
             hover:bg-red-100 transition"
         >
           Delete
